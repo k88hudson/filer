@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Filer : Node-like file system for browsers">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Filer</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/filerjs/filer">View on GitHub</a>
+
+          <h1 id="project_title">Filer</h1>
+          <h2 id="project_tagline">Node-like file system for browsers</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/filerjs/filer/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/filerjs/filer/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p><a href="https://nodei.co/npm/filer/"><img src="https://nodei.co/npm/filer.png?downloads=true&amp;stars=true" alt="NPM"></a></p>
+
+<p><a href="http://travis-ci.org/filerjs/filer"><img src="https://secure.travis-ci.org/filerjs/filer.png?branch=develop" alt="Build Status"></a></p>
+
+<h3>
+<a name="filer" class="anchor" href="#filer"><span class="octicon octicon-link"></span></a>Filer</h3>
+
+<p>Filer is a POSIX-like file system interface for node.js and browser-based JavaScript.</p>
+
+<h3>
+<a name="compatibility" class="anchor" href="#compatibility"><span class="octicon octicon-link"></span></a>Compatibility</h3>
+
+<p>Filer is known to work in the following browsers/versions, with the specified <a href="#providers">Storage Providers</a>:</p>
+
+<ul>
+<li>node.js: v0.10.*+</li>
+<li>IE: 10+ (IndexedDB)</li>
+<li>Firefox: 26+ (IndexedDB)</li>
+<li>Chrome: 31+ (IndexedDB, WebSQL)</li>
+<li>Safari: 7.0+ (WebSQL)</li>
+<li>Opera: 19+ (IndexedDB, WebSQL)</li>
+<li>iOS: 3.2+ (WebSQL)</li>
+<li>Android Browser: 2.1-4.4 (WebSQL), 4.4+ (IndexedDB)</li>
+</ul><p>NOTE: if you're interested in maximum compatibility, use the <code>Fallback</code> provider instead of <code>Default</code>.
+See the section on <a href="#providers">Storage Providers</a>.</p>
+
+<h3>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h3>
+
+<p>Want to join the fun? We'd love to have you! See <a href="https://github.com/filerjs/filer/blob/develop/CONTRIBUTING.md">CONTRIBUTING</a>.</p>
+
+<h3>
+<a name="how-to-get-it" class="anchor" href="#how-to-get-it"><span class="octicon octicon-link"></span></a>How to Get It</h3>
+
+<p>Filer can be obtained in a number of ways:</p>
+
+<ol>
+<li>npm - <code>npm install filer</code>
+</li>
+<li>bower - <code>bower install filer</code>
+</li>
+<li>download pre-built versions: <a href="https://raw.github.com/filerjs/filer/develop/dist/filer.js">filer.js</a>, <a href="https://raw.github.com/filerjs/filer/develop/dist/filer.min.js">filer.min.js</a>
+</li>
+</ol><h3>
+<a name="loading-and-usage" class="anchor" href="#loading-and-usage"><span class="octicon octicon-link"></span></a>Loading and Usage</h3>
+
+<p>Filer is built as a UMD module and can therefore be loaded as a CommonJS or AMD module, or used via the global.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Option 1: Filer loaded via require() in node/browserify</span>
+<span class="kd">var</span> <span class="nx">Filer</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'filer'</span><span class="p">);</span>
+
+<span class="c1">// Option 2: Filer loaded via RequireJS</span>
+<span class="nx">requirejs</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
+  <span class="nx">baseUrl</span><span class="o">:</span> <span class="s1">'/'</span><span class="p">,</span>
+  <span class="nx">paths</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s1">'filer'</span><span class="o">:</span> <span class="s1">'filer/dist/filer'</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+<span class="nx">requirejs</span><span class="p">([</span><span class="s1">'filer'</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">Filer</span><span class="p">)</span> <span class="p">{...}</span>
+
+<span class="c1">// Option 3: Filer on global</span>
+<span class="kd">var</span> <span class="nx">Filer</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Filer</span><span class="p">;</span>
+</pre></div>
+
+<h3>
+<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting Started</h3>
+
+<p>Filer is as close to the node.js <a href="http://nodejs.org/api/fs.html">fs module</a> as possible,
+with the following differences:</p>
+
+<ul>
+<li>No synchronous versions of methods (e.g., <code>mkdir()</code> but not <code>mkdirSync()</code>).</li>
+<li>No permissions (e.g., no <code>chown()</code>, <code>chmod()</code>, etc.).</li>
+<li>No support for stream-based operations (e.g., <code>fs.ReadStream</code>, <code>fs.WriteStream</code>).</li>
+</ul><p>Filer has other features lacking in node.js (e.g., swappable backend
+storage providers, extended attributes, etc).</p>
+
+<p>Like node.js, the API is asynchronous and most methods expect the caller to provide
+a callback function (note: like node.js, Filer will supply one if it's missing).
+Errors are passed to callbacks through the first parameter.  As with node.js,
+there is no guarantee that file system operations will be executed in the order
+they are invoked. Ensure proper ordering by chaining operations in callbacks.</p>
+
+<h3>
+<a name="overview" class="anchor" href="#overview"><span class="octicon octicon-link"></span></a>Overview</h3>
+
+<p>To create a new file system or open an existing one, create a new <code>FileSystem</code>
+instance.  By default, a new <a href="https://developer.mozilla.org/en/docs/IndexedDB">IndexedDB</a>
+database is created for each file system. The file system can also use other
+backend storage providers, for example <a href="http://en.wikipedia.org/wiki/Web_SQL_Database">WebSQL</a>
+or even RAM (i.e., for temporary storage). See the section on <a href="#providers">Storage Providers</a>.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">FileSystem</span><span class="p">();</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="s1">'w+'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fd</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="nx">fd</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+    <span class="nx">fs</span><span class="p">.</span><span class="nx">stat</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">stats</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'stats: '</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">stats</span><span class="p">));</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>For a complete list of <code>FileSystem</code> methods and examples, see the <a href="#FileSystemMethods">FileSystem Instance Methods</a>
+section below.</p>
+
+<p>Filer also supports node's Path module. See the <a href="#FilerPath">Filer.Path</a> section below.</p>
+
+<p>In addition, common shell operations (e.g., rm, touch, cat, etc.) are supported via the
+<code>FileSystemShell</code> object, which can be obtained from, and used with a <code>FileSystem</code>.
+See the<a href="#FileSystemShell">FileSystemShell</a> section below.</p>
+
+<h3>
+<a name="api-reference" class="anchor" href="#api-reference"><span class="octicon octicon-link"></span></a>API Reference</h3>
+
+<p>Like node.js, callbacks for methods that accept them are optional but suggested (i.e., if
+you omit the callback, errors will be thrown as exceptions). The first callback parameter is
+reserved for passing errors. It will be <code>null</code> if no errors occurred and should always be checked.</p>
+
+<h4>
+<a name="filerfilesystemoptions-callback-constructor" class="anchor" href="#filerfilesystemoptions-callback-constructor"><span class="octicon octicon-link"></span></a>Filer.FileSystem(options, callback) constructor</h4>
+
+<p>File system constructor, invoked to open an existing file system or create a new one.
+Accepts two arguments: an <code>options</code> object, and an optional <code>callback</code>. The <code>options</code>
+object can specify a number of optional arguments, including:</p>
+
+<ul>
+<li>
+<code>name</code>: the name of the file system, defaults to <code>'"local'</code>
+</li>
+<li>
+<code>flags</code>: an Array of one or more flags to use when creating/opening the file system:
+
+<ul>
+<li>
+<code>'FORMAT'</code> to force Filer to format (i.e., erase) the file system</li>
+<li>
+<code>'NOCTIME'</code> to force Filer to not update <code>ctime</code> on nodes when metadata changes (i.e., for better performance)</li>
+<li>
+<code>'NOMTIME'</code> to force Filer to not update <code>mtime</code> on nodes when data changes (i.e., for better performance)</li>
+</ul>
+</li>
+<li>
+<code>provider</code>: an explicit storage provider to use for the file system's database context provider. See the section on <a href="#providers">Storage Providers</a>.</li>
+</ul><p>The <code>callback</code> function indicates when the file system is ready for use. Depending on the storage provider used, this might
+be right away, or could take some time. The callback should expect two arguments: first, an <code>error</code> argument, which will be
+null if everything worked; second, an instance, such that you can access the newly ready FileSystem instance. Also users
+should check the file system's <code>readyState</code> and <code>error</code> properties to make sure it is usable.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">fs</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">fsReady</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fs</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// Safe to use fs now...</span>
+<span class="p">}</span>
+
+<span class="nx">fs</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">FileSystem</span><span class="p">({</span>
+  <span class="nx">name</span><span class="o">:</span> <span class="s2">"my-filesystem"</span><span class="p">,</span>
+  <span class="nx">flags</span><span class="o">:</span> <span class="p">[</span> <span class="s1">'FORMAT'</span> <span class="p">],</span>
+  <span class="nx">provider</span><span class="o">:</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">FileSystem</span><span class="p">.</span><span class="nx">providers</span><span class="p">.</span><span class="nx">Memory</span><span class="p">()</span>
+<span class="p">},</span> <span class="nx">fsReady</span><span class="p">);</span>
+</pre></div>
+
+<p>NOTE: if the optional callback argument is not passed to the <code>FileSystem</code> constructor,
+operations done on the resulting file system will be queued and run in sequence when
+it becomes ready.</p>
+
+<h4>
+<a name="filerfilesystemproviders---storage-providers" class="anchor" href="#filerfilesystemproviders---storage-providers"><span class="octicon octicon-link"></span></a>Filer.FileSystem.providers - Storage Providers<a name="providers"></a>
+</h4>
+
+<p>Filer can be configured to use a number of different storage providers. The provider object encapsulates all aspects
+of data access, making it possible to swap in different backend storage options.  There are currently 4 different
+providers to choose from:</p>
+
+<ul>
+<li>
+<code>FileSystem.providers.IndexedDB()</code> - uses IndexedDB</li>
+<li>
+<code>FileSystem.providers.WebSQL()</code> - uses WebSQL</li>
+<li>
+<code>FileSystem.providers.Fallback()</code> - attempts to use IndexedDB if possible, falling-back to WebSQL if necessary</li>
+<li>
+<code>FileSystem.providers.Memory()</code> - uses memory (not suitable for data that needs to survive the current session)</li>
+</ul><p>You can choose your provider when creating a <code>FileSystem</code>:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">FileSystem</span> <span class="o">=</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">FileSystem</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">providers</span> <span class="o">=</span> <span class="nx">FileSystem</span><span class="p">.</span><span class="nx">providers</span><span class="p">;</span>
+
+<span class="c1">// Example 1: Use the default provider (currently IndexedDB)</span>
+<span class="kd">var</span> <span class="nx">fs1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FileSystem</span><span class="p">();</span>
+
+<span class="c1">// Example 2: Explicitly use IndexedDB</span>
+<span class="kd">var</span> <span class="nx">fs2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FileSystem</span><span class="p">({</span> <span class="nx">provider</span><span class="o">:</span> <span class="k">new</span> <span class="nx">providers</span><span class="p">.</span><span class="nx">IndexedDB</span><span class="p">()</span> <span class="p">});</span>
+
+<span class="c1">// Example 3: Use one of IndexedDB or WebSQL, whichever is supported</span>
+<span class="kd">var</span> <span class="nx">fs3</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FileSystem</span><span class="p">({</span> <span class="nx">provider</span><span class="o">:</span> <span class="k">new</span> <span class="nx">providers</span><span class="p">.</span><span class="nx">Fallback</span><span class="p">()</span> <span class="p">});</span>
+</pre></div>
+
+<p>Every provider has an <code>isSupported()</code> method, which returns <code>true</code> if the browser supports this provider:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="k">if</span><span class="p">(</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">FileSystem</span><span class="p">.</span><span class="nx">providers</span><span class="p">.</span><span class="nx">WebSQL</span><span class="p">.</span><span class="nx">isSupported</span><span class="p">()</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// WebSQL provider will work in current environment...</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>You can also write your own provider if you need a different backend. See the code in <code>src/providers</code> for details.</p>
+
+<p>A number of other providers have been written, including:</p>
+
+<ul>
+<li>node.js fs provider: <a href="https://github.com/humphd/filer-fs">https://github.com/humphd/filer-fs</a>
+</li>
+<li>node.js Amazon S3 provider: <a href="https://github.com/alicoding/filer-s3">https://github.com/alicoding/filer-s3</a>
+</li>
+</ul><h4>
+<a name="filerbuffer" class="anchor" href="#filerbuffer"><span class="octicon octicon-link"></span></a>Filer.Buffer<a name="FilerBuffer"></a>
+</h4>
+
+<p>When reading and writing data, Filer follows node.js and uses <a href="http://nodejs.org/api/buffer.html"><code>Buffer</code></a>.
+When in a node.js environment, native <code>Buffer</code>s can be used, or Filer.Buffer, which is a shortcut
+to node's <code>Buffer</code>.  In a browser, you can use also use <code>Filer.Buffer</code>.</p>
+
+<p>NOTE: a <code>Filer.Buffer</code> in a browser is really an augmented <code>Uint8Array</code> (i.e., the node <code>Buffer</code> api
+methods are added to the instance). See <a href="https://github.com/feross/buffer">https://github.com/feross/buffer</a> for more details. Additionally, unlike native <code>Buffer</code>, <code>Filer.Buffer</code>'s constructor can accept <code>ArrayBuffer</code> objects, which will be interpreted as <code>Uint8Array</code>s.</p>
+
+<h4>
+<a name="filerpath" class="anchor" href="#filerpath"><span class="octicon octicon-link"></span></a>Filer.Path<a name="FilerPath"></a>
+</h4>
+
+<p>The node.js <a href="http://nodejs.org/api/path.html">path module</a> is available via the <code>Filer.Path</code> object. It is
+identical to the node.js version with the following differences:</p>
+
+<ul>
+<li>No notion of a current working directory in <code>resolve</code> (the root dir is used instead)</li>
+</ul><div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">Path</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">dir</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">dirname</span><span class="p">(</span><span class="s1">'/foo/bar/baz/asdf/quux'</span><span class="p">);</span>
+<span class="c1">// dir is now '/foo/bar/baz/asdf'</span>
+
+<span class="kd">var</span> <span class="nx">base</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">basename</span><span class="p">(</span><span class="s1">'/foo/bar/baz/asdf/quux.html'</span><span class="p">);</span>
+<span class="c1">// base is now 'quux.html'</span>
+
+<span class="kd">var</span> <span class="nx">ext</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">extname</span><span class="p">(</span><span class="s1">'index.html'</span><span class="p">);</span>
+<span class="c1">// ext is now '.html'</span>
+
+<span class="kd">var</span> <span class="nx">newpath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">'/foo'</span><span class="p">,</span> <span class="s1">'bar'</span><span class="p">,</span> <span class="s1">'baz/asdf'</span><span class="p">,</span> <span class="s1">'quux'</span><span class="p">,</span> <span class="s1">'..'</span><span class="p">);</span>
+<span class="c1">// new path is now '/foo/bar/baz/asdf'</span>
+</pre></div>
+
+<p>For more info see the docs in the <a href="http://nodejs.org/api/path.html">path module</a> for a particular method:</p>
+
+<ul>
+<li><code>path.normalize(p)</code></li>
+<li><code>path.join([path1], [path2], [...])</code></li>
+<li><code>path.resolve([from ...], to)</code></li>
+<li><code>path.relative(from, to)</code></li>
+<li><code>path.dirname(p)</code></li>
+<li><code>path.basename(p, [ext])</code></li>
+<li><code>path.extname(p)</code></li>
+<li><code>path.sep</code></li>
+<li><code>path.delimiter</code></li>
+</ul><h4>
+<a name="filererrors" class="anchor" href="#filererrors"><span class="octicon octicon-link"></span></a>Filer.Errors<a name="Errors"></a>
+</h4>
+
+<p>The error objects used internally by Filer are also exposed via the <code>Filer.Errors</code> object. As much as possible
+these match their node.js counterparts, with a few Filer-specifc additions.
+See <a href="https://github.com/filerjs/filer/blob/develop/src/errors.js">src/errors.js</a> for the complete
+list. Errors can be used, or compared, like so:</p>
+
+<p>Examples:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Example 1: create an EExist error</span>
+<span class="kd">var</span> <span class="nx">err1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">Errors</span><span class="p">.</span><span class="nx">EEXIST</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">err2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">Errors</span><span class="p">[</span><span class="mi">47</span><span class="p">];</span>
+
+<span class="c1">// Example 2: compare an error to see if it is EInvalid</span>
+<span class="kd">function</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span> <span class="k">instanceof</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">Errors</span><span class="p">.</span><span class="nx">EINVAL</span><span class="p">){</span>
+    <span class="p">...</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Or compare the error's code</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">code</span> <span class="o">===</span> <span class="s1">'EINVAL'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Example 4: compare an error using errno</span>
+<span class="kd">function</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">errno</span> <span class="o">===</span> <span class="mi">47</span><span class="p">){</span>
+    <span class="p">...</span>
+  <span class="p">}</span>
+
+<span class="c1">// Example 5: display the error message</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
+</pre></div>
+
+<h3>
+<a name="filesystem-instance-methods" class="anchor" href="#filesystem-instance-methods"><span class="octicon octicon-link"></span></a>FileSystem Instance Methods<a name="FileSystemMethods"></a>
+</h3>
+
+<p>Once a <code>FileSystem</code> is created, it has the following methods. NOTE: code examples below assume
+a <code>FileSystem</code> instance named <code>fs</code> has been created like so:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">FileSystem</span><span class="p">();</span>
+</pre></div>
+
+<ul>
+<li><a href="#rename">fs.rename(oldPath, newPath, callback)</a></li>
+<li><a href="#ftruncate">fs.ftruncate(fd, len, callback)</a></li>
+<li><a href="#truncate">fs.truncate(path, len, callback)</a></li>
+<li><a href="#stat">fs.stat(path, callback)</a></li>
+<li><a href="#fstat">fs.fstat(fd, callback)</a></li>
+<li><a href="#lstat">fs.lstat(path, callback)</a></li>
+<li><a href="#exists">fs.exists(path, callback)</a></li>
+<li><a href="#link">fs.link(srcpath, dstpath, callback)</a></li>
+<li><a href="#symlink">fs.symlink(srcpath, dstpath, [type], callback)</a></li>
+<li><a href="#readlink">fs.readlink(path, callback)</a></li>
+<li><a href="#realpath">fs.realpath(path, [cache], callback)</a></li>
+<li><a href="#unlink">fs.unlink(path, callback)</a></li>
+<li><a href="#mknod">fs.mknod(path, mode, callback)</a></li>
+<li><a href="#rmdir">fs.rmdir(path, callback)</a></li>
+<li><a href="#mkdir">fs.mkdir(path, [mode], callback)</a></li>
+<li><a href="#readdir">fs.readdir(path, callback)</a></li>
+<li><a href="#close">fs.close(fd, callback)</a></li>
+<li><a href="#open">fs.open(path, flags, [mode], callback)</a></li>
+<li><a href="#utimes">fs.utimes(path, atime, mtime, callback)</a></li>
+<li><a href="#fsutimes">fs.futimes(fd, atime, mtime, callback)</a></li>
+<li><a href="#fsync">fs.fsync(fd, callback)</a></li>
+<li><a href="#write">fs.write(fd, buffer, offset, length, position, callback)</a></li>
+<li><a href="#read">fs.read(fd, buffer, offset, length, position, callback)</a></li>
+<li><a href="#readFile">fs.readFile(filename, [options], callback)</a></li>
+<li><a href="#writeFile">fs.writeFile(filename, data, [options], callback)</a></li>
+<li><a href="#appendFile">fs.appendFile(filename, data, [options], callback)</a></li>
+<li><a href="#setxattr">fs.setxattr(path, name, value, [flag], callback)</a></li>
+<li><a href="#fsetxattr">fs.fsetxattr(fd, name, value, [flag], callback)</a></li>
+<li><a href="#getxattr">fs.getxattr(path, name, callback)</a></li>
+<li><a href="#fgetxattr">fs.fgetxattr(fd, name, callback)</a></li>
+<li><a href="#removexattr">fs.removexattr(path, name, callback)</a></li>
+<li><a href="#fremovexattr">fs.fremovexattr(fd, name, callback)</a></li>
+<li><a href="#watch">fs.watch(filename, [options], [listener])</a></li>
+</ul><h4>
+<a name="fsrenameoldpath-newpath-callback" class="anchor" href="#fsrenameoldpath-newpath-callback"><span class="octicon octicon-link"></span></a>fs.rename(oldPath, newPath, callback)<a name="rename"></a>
+</h4>
+
+<p>Renames the file at <code>oldPath</code> to <code>newPath</code>. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/rename.html">rename(2)</a>.
+Callback gets no additional arguments.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Rename myfile.txt to myfile.bak</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">rename</span><span class="p">(</span><span class="s2">"/myfile.txt"</span><span class="p">,</span> <span class="s2">"/myfile.bak"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// myfile.txt is now myfile.bak</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsftruncatefd-len-callback" class="anchor" href="#fsftruncatefd-len-callback"><span class="octicon octicon-link"></span></a>fs.ftruncate(fd, len, callback)<a name="ftruncate"></a>
+</h4>
+
+<p>Change the size of the file represented by the open file descriptor <code>fd</code> to be length
+<code>len</code> bytes. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/ftruncate.html">ftruncate(2)</a>.
+If the file is larger than <code>len</code>, the extra bytes will be discarded; if smaller, its size will
+be increased, and the extended area will appear as if it were zero-filled. See also <a href="#truncate">fs.truncate()</a>.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Create a file, shrink it, expand it.</span>
+<span class="kd">var</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">Buffer</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]);</span>
+
+<span class="nx">fs</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fd</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">fd</span><span class="p">,</span> <span class="nx">buffer</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">buffer</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+      <span class="nx">fs</span><span class="p">.</span><span class="nx">ftruncate</span><span class="p">(</span><span class="nx">fd</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+        <span class="c1">// /myfile is now 3 bytes in length, rest of data discarded</span>
+
+        <span class="nx">fs</span><span class="p">.</span><span class="nx">ftruncate</span><span class="p">(</span><span class="nx">fd</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+          <span class="c1">// /myfile is now 50 bytes in length, with zero padding at end</span>
+
+          <span class="nx">fs</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="nx">fd</span><span class="p">);</span>
+        <span class="p">});</span>
+      <span class="p">});</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fstruncatepath-len-callback" class="anchor" href="#fstruncatepath-len-callback"><span class="octicon octicon-link"></span></a>fs.truncate(path, len, callback)<a name="truncate"></a>
+</h4>
+
+<p>Change the size of the file at <code>path</code> to be length <code>len</code> bytes. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/truncate.html">truncate(2)</a>. If the file is larger than <code>len</code>, the extra bytes will be discarded; if smaller, its size will
+be increased, and the extended area will appear as if it were zero-filled. See also <a href="#ftruncate">fs.ftruncate()</a>.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Create a file, shrink it, expand it.</span>
+<span class="kd">var</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">Buffer</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]);</span>
+
+<span class="nx">fs</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fd</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">fd</span><span class="p">,</span> <span class="nx">buffer</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">buffer</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+    <span class="nx">fs</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="nx">fd</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+
+      <span class="nx">fs</span><span class="p">.</span><span class="nx">truncate</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+        <span class="c1">// /myfile is now 3 bytes in length, rest of data discarded</span>
+
+        <span class="nx">fs</span><span class="p">.</span><span class="nx">truncate</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+          <span class="c1">// /myfile is now 50 bytes in length, with zero padding at end</span>
+
+        <span class="p">});</span>
+      <span class="p">});</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsstatpath-callback" class="anchor" href="#fsstatpath-callback"><span class="octicon octicon-link"></span></a>fs.stat(path, callback)<a name="stat"></a>
+</h4>
+
+<p>Obtain file status about the file at <code>path</code>. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/stat.html">stat(2)</a>.
+Callback gets <code>(error, stats)</code>, where <code>stats</code> is an object with the following properties:</p>
+
+<pre><code>{
+  node: &lt;string&gt;   // internal node id (unique)
+  dev: &lt;string&gt;    // file system name
+  size: &lt;number&gt;   // file size in bytes
+  nlinks: &lt;number&gt; // number of links
+  atime: &lt;number&gt;  // last access time
+  mtime: &lt;number&gt;  // last modified time
+  ctime: &lt;number&gt;  // creation time
+  type: &lt;string&gt;   // file type (FILE, DIRECTORY, SYMLINK)
+}
+</code></pre>
+
+<p>The following convenience methods are also present on the callback's <code>stats</code>:</p>
+
+<pre><code>isFile():             Returns true if the node is a file.
+isDirectory():        Returns true if the node is a directory.
+isBlockDevice():      Not implemented, returns false.
+isCharacterDevice():  Not implemented, returns false.
+isSymbolicLink():     Returns true if the node is a symbolic link.
+isFIFO():             Not implemented, returns false.
+isSocket():           Not implemented, returns false.
+</code></pre>
+
+<p>If the file at <code>path</code> is a symbolic link, the file to which it links will be used instead.
+To get the status of a symbolic link file, use <a href="#lstat">fs.lstat()</a> instead.</p>
+
+<p>Examples:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Check if a directory exists</span>
+<span class="kd">function</span> <span class="nx">dirExists</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">stat</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">stats</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">exists</span> <span class="o">=</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">type</span> <span class="o">===</span> <span class="s2">"DIRECTORY"</span><span class="p">;</span>
+    <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">exists</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="c1">// Get the size of a file in KB</span>
+<span class="kd">function</span> <span class="nx">fileSize</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">stat</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">stats</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">kb</span> <span class="o">=</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">size</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">;</span>
+    <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">kb</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+
+<h4>
+<a name="fsfstatfd-callback" class="anchor" href="#fsfstatfd-callback"><span class="octicon octicon-link"></span></a>fs.fstat(fd, callback)<a name="fstat"></a>
+</h4>
+
+<p>Obtain information about the open file known by the file descriptor <code>fd</code>.
+Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/fstat.html">fstat(2)</a>.
+Callback gets <code>(error, stats)</code>. <code>fstat()</code> is identical to <code>stat()</code>, except that the file to be stat-ed is
+specified by the open file descriptor <code>fd</code> instead of a path.  See also <a href="#stat">fs.stat</a></p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">fs</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">"/file.txt"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fd</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">fstat</span><span class="p">(</span><span class="nx">fd</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">stats</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+    <span class="c1">// do something with stats object</span>
+    <span class="c1">// ...</span>
+    <span class="nx">fs</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="nx">fd</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fslstatpath-callback" class="anchor" href="#fslstatpath-callback"><span class="octicon octicon-link"></span></a>fs.lstat(path, callback)<a name="lstat"></a>
+</h4>
+
+<p>Obtain information about the file at <code>path</code> (i.e., the symbolic link file itself) vs.
+the destination file to which it links. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/lstat.html">lstat(2)</a>.
+Callback gets <code>(error, stats)</code>. See also <a href="#stat">fs.stat</a>.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Create a symbolic link, /data/logs/current to /data/logs/august</span>
+<span class="c1">// and get info about the symbolic link file, and linked file.</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">link</span><span class="p">(</span><span class="s2">"/data/logs/august"</span><span class="p">,</span> <span class="s2">"/data/logs/current"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+  <span class="c1">// Get status of linked file, /data/logs/august</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">stat</span><span class="p">(</span><span class="s2">"/data/logs/current"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">stats</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+    <span class="c1">// Size of /data/logs/august</span>
+    <span class="kd">var</span> <span class="nx">size</span> <span class="o">=</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">size</span><span class="p">;</span>
+  <span class="p">});</span>
+
+  <span class="c1">// Get status of symbolic link file itself</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">lstat</span><span class="p">(</span><span class="s2">"/data/logs/current"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">stats</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+    <span class="c1">// Size of /data/logs/current</span>
+    <span class="kd">var</span> <span class="nx">size</span> <span class="o">=</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">size</span><span class="p">;</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsexistspath-callback" class="anchor" href="#fsexistspath-callback"><span class="octicon octicon-link"></span></a>fs.exists(path, callback)<a name="exists"></a>
+</h4>
+
+<p>Test whether or not the given path exists by checking with the file system. 
+Then call the callback argument with either true or false. </p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">//Test if the file exists</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">exists</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">exists</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">exists</span> <span class="o">?</span> <span class="s2">"file exists"</span> <span class="o">:</span> <span class="s2">"file not found"</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>fs.exists() is an anachronism and exists only for historical reasons. There should almost never be a reason to use it in your own code.</p>
+
+<p>In particular, checking if a file exists before opening it is an anti-pattern that leaves you vulnerable to race conditions: another process may remove the file between the calls to fs.exists() and fs.open(). Just open the file and handle the error when it's not there.</p>
+
+<h4>
+<a name="fslinksrcpath-dstpath-callback" class="anchor" href="#fslinksrcpath-dstpath-callback"><span class="octicon octicon-link"></span></a>fs.link(srcPath, dstPath, callback)<a name="link"></a>
+</h4>
+
+<p>Create a (hard) link to the file at <code>srcPath</code> named <code>dstPath</code>. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/link.html">link(2)</a>. Callback gets no additional arguments. Links are directory entries that point to the same file node.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">fs</span><span class="p">.</span><span class="nx">link</span><span class="p">(</span><span class="s1">'/logs/august.log'</span><span class="p">,</span> <span class="s1">'/logs/current'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="s1">'/logs/current'</span><span class="p">,</span> <span class="s1">'utf8'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// data is the contents of /logs/august.log</span>
+    <span class="kd">var</span> <span class="nx">currentLog</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fssymlinksrcpath-dstpath-type-callback" class="anchor" href="#fssymlinksrcpath-dstpath-type-callback"><span class="octicon octicon-link"></span></a>fs.symlink(srcPath, dstPath, [type], callback)<a name="symlink"></a>
+</h4>
+
+<p>Create a symbolic link to the file at <code>dstPath</code> containing the path <code>srcPath</code>. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/symlink.html">symlink(2)</a>. Callback gets no additional arguments.
+Symbolic links are files that point to other paths.</p>
+
+<p>NOTE: Filer allows for, but ignores the optional <code>type</code> parameter used in node.js.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">fs</span><span class="p">.</span><span class="nx">symlink</span><span class="p">(</span><span class="s1">'/logs/august.log'</span><span class="p">,</span> <span class="s1">'/logs/current'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="s1">'/logs/current'</span><span class="p">,</span> <span class="s1">'utf8'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// data is the contents of /logs/august.log</span>
+    <span class="kd">var</span> <span class="nx">currentLog</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsreadlinkpath-callback" class="anchor" href="#fsreadlinkpath-callback"><span class="octicon octicon-link"></span></a>fs.readlink(path, callback)<a name="readlink"></a>
+</h4>
+
+<p>Reads the contents of a symbolic link. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/readlink.html">readlink(2)</a>. Callback gets <code>(error, linkContents)</code>, where <code>linkContents</code> is a string containing the symbolic link's link path.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">fs</span><span class="p">.</span><span class="nx">symlink</span><span class="p">(</span><span class="s1">'/logs/august.log'</span><span class="p">,</span> <span class="s1">'/logs/current'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">readlink</span><span class="p">(</span><span class="s1">'/logs/current'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">linkContents</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// linkContents is now '/logs/august.log'</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsrealpathpath-cache-callback" class="anchor" href="#fsrealpathpath-cache-callback"><span class="octicon octicon-link"></span></a>fs.realpath(path, [cache], callback)<a name="realpath"></a>
+</h4>
+
+<p>NOTE: Not implemented, see <a href="https://github.com/filerjs/filer/issues/85">https://github.com/filerjs/filer/issues/85</a></p>
+
+<h4>
+<a name="fsunlinkpath-callback" class="anchor" href="#fsunlinkpath-callback"><span class="octicon octicon-link"></span></a>fs.unlink(path, callback)<a name="unlink"></a>
+</h4>
+
+<p>Removes the directory entry located at <code>path</code>. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/unlink.html">unlink(2)</a>.
+Callback gets no additional arguments. If <code>path</code> names a symbolic link, the symbolic link will be removed
+(i.e., not the linked file). Otherwise, the filed named by <code>path</code> will be removed (i.e., deleted).</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Delete regular file /backup.old</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">unlink</span><span class="p">(</span><span class="s1">'/backup.old'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// /backup.old is now removed</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsmknodpath-mode-callback" class="anchor" href="#fsmknodpath-mode-callback"><span class="octicon octicon-link"></span></a>fs.mknod(path, mode, callback)<a name="mknod"></a>
+</h4>
+
+<p>Creates a node at <code>path</code> based on the mode passed which is either <code>FILE</code> or <code>DIRECTORY</code>. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/mknod.html">mknod(2)</a>. Callback gets no additional arguments.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Create a /dir directory</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">mknod</span><span class="p">(</span><span class="s1">'/dir'</span><span class="p">,</span> <span class="s1">'DIRECTORY'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// /dir is now created</span>
+
+  <span class="c1">// Create a file inside /dir</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">mknod</span><span class="p">(</span><span class="s1">'/dir/myfile'</span><span class="p">,</span> <span class="s1">'FILE'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+    <span class="c1">// /dir/myfile now exists</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsrmdirpath-callback" class="anchor" href="#fsrmdirpath-callback"><span class="octicon octicon-link"></span></a>fs.rmdir(path, callback)<a name="rmdir"></a>
+</h4>
+
+<p>Removes the directory at <code>path</code>. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/rmdir.html">rmdir(2)</a>.
+Callback gets no additional arguments. The operation will fail if the directory at <code>path</code> is not empty.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="cm">/**</span>
+<span class="cm"> * Given the following dir structure, remove docs/</span>
+<span class="cm"> *  /docs</span>
+<span class="cm"> *    a.txt</span>
+<span class="cm"> */</span>
+
+<span class="c1">// Start by deleting the files in docs/, then remove docs/</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">unlink</span><span class="p">(</span><span class="s1">'/docs/a.txt'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">rmdir</span><span class="p">(</span><span class="s1">'/docs'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsmkdirpath-mode-callback" class="anchor" href="#fsmkdirpath-mode-callback"><span class="octicon octicon-link"></span></a>fs.mkdir(path, [mode], callback)<a name="mkdir"></a>
+</h4>
+
+<p>Makes a directory with name supplied in <code>path</code> argument. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/mkdir.html">mkdir(2)</a>. Callback gets no additional arguments.</p>
+
+<p>NOTE: Filer allows for, but ignores the optional <code>mode</code> argument used in node.js.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Create /home and then /home/carl directories</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s1">'/home'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s1">'/home/carl'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+    <span class="c1">// directory /home/carl now exists</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsreaddirpath-callback" class="anchor" href="#fsreaddirpath-callback"><span class="octicon octicon-link"></span></a>fs.readdir(path, callback)<a name="readdir"></a>
+</h4>
+
+<p>Reads the contents of a directory. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/readdir.html">readdir(3)</a>.
+Callback gets <code>(error, files)</code>, where <code>files</code> is an array containing the names of each directory entry (i.e., file, directory, link) in the directory, excluding <code>.</code> and <code>..</code>.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="cm">/**</span>
+<span class="cm"> * Given the following dir structure:</span>
+<span class="cm"> *  /docs</span>
+<span class="cm"> *    a.txt</span>
+<span class="cm"> *    b.txt</span>
+<span class="cm"> *    c/</span>
+<span class="cm"> */</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">readdir</span><span class="p">(</span><span class="s1">'/docs'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">files</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// files now contains ['a.txt', 'b.txt', 'c']</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsclosefd-callback" class="anchor" href="#fsclosefd-callback"><span class="octicon octicon-link"></span></a>fs.close(fd, callback)<a name="close"></a>
+</h4>
+
+<p>Closes a file descriptor. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/close.html">close(2)</a>.
+Callback gets no additional arguments.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">fs</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fd</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+
+  <span class="c1">// Do something with open file descriptor `fd`</span>
+
+  <span class="c1">// Close file descriptor when done</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="nx">fd</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsopenpath-flags-mode-callback" class="anchor" href="#fsopenpath-flags-mode-callback"><span class="octicon octicon-link"></span></a>fs.open(path, flags, [mode], callback)<a name="open"></a>
+</h4>
+
+<p>Opens a file. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/open.html">open(2)</a>.
+Callback gets <code>(error, fd)</code>, where <code>fd</code> is the file descriptor. The <code>flags</code> argument can be:</p>
+
+<ul>
+<li>
+<code>'r'</code>: Open file for reading. An exception occurs if the file does not exist.</li>
+<li>
+<code>'r+'</code>: Open file for reading and writing. An exception occurs if the file does not exist.</li>
+<li>
+<code>'w'</code>: Open file for writing. The file is created (if it does not exist) or truncated (if it exists).</li>
+<li>
+<code>'w+'</code>: Open file for reading and writing. The file is created (if it does not exist) or truncated (if it exists).</li>
+<li>
+<code>'a'</code>: Open file for appending. The file is created if it does not exist.</li>
+<li>
+<code>'a+'</code>: Open file for reading and appending. The file is created if it does not exist.</li>
+</ul><p>NOTE: Filer allows for, but ignores the optional <code>mode</code> argument used in node.js.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">fs</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fd</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+
+  <span class="c1">// Do something with open file descriptor `fd`</span>
+
+  <span class="c1">// Close file descriptor when done</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="nx">fd</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsutimespath-atime-mtime-callback" class="anchor" href="#fsutimespath-atime-mtime-callback"><span class="octicon octicon-link"></span></a>fs.utimes(path, atime, mtime, callback)<a name="utimes"></a>
+</h4>
+
+<p>Changes the file timestamps for the file given at path <code>path</code>. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/utimes.html">utimes(2)</a>. Callback gets no additional arguments. Both <code>atime</code> (access time) and <code>mtime</code> (modified time) arguments should be a JavaScript Date.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">now</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">utimes</span><span class="p">(</span><span class="s1">'/myfile.txt'</span><span class="p">,</span> <span class="nx">now</span><span class="p">,</span> <span class="nx">now</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// Access Time and Modified Time for /myfile.txt are now updated</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsfutimesfd-atime-mtime-callback" class="anchor" href="#fsfutimesfd-atime-mtime-callback"><span class="octicon octicon-link"></span></a>fs.futimes(fd, atime, mtime, callback)<a name="futimes"></a>
+</h4>
+
+<p>Changes the file timestamps for the open file represented by the file descriptor <code>fd</code>. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/utimes.html">utimes(2)</a>. Callback gets no additional arguments. Both <code>atime</code> (access time) and <code>mtime</code> (modified time) arguments should be a JavaScript Date.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">fs</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'/myfile.txt'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fd</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+  <span class="kd">var</span> <span class="nx">now</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">futimes</span><span class="p">(</span><span class="nx">fd</span><span class="p">,</span> <span class="nx">now</span><span class="p">,</span> <span class="nx">now</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+    <span class="c1">// Access Time and Modified Time for /myfile.txt are now updated</span>
+
+    <span class="nx">fs</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="nx">fd</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsfsyncfd-callback" class="anchor" href="#fsfsyncfd-callback"><span class="octicon octicon-link"></span></a>fs.fsync(fd, callback)<a name="fsync"></a>
+</h4>
+
+<p>NOTE: Not yet implemented, see <a href="https://github.com/filerjs/filer/issues/87">https://github.com/filerjs/filer/issues/87</a></p>
+
+<h4>
+<a name="fswritefd-buffer-offset-length-position-callback" class="anchor" href="#fswritefd-buffer-offset-length-position-callback"><span class="octicon octicon-link"></span></a>fs.write(fd, buffer, offset, length, position, callback)<a name="write"></a>
+</h4>
+
+<p>Writes bytes from <code>buffer</code> to the file specified by <code>fd</code>. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/write.html">write(2), pwrite(2)</a>. The <code>offset</code> and <code>length</code> arguments describe the part of the buffer to be written. The <code>position</code> refers to the offset from the beginning of the file where this data should be written. If <code>position</code> is <code>null</code>, the data will be written at the current position. The callback gets <code>(error, nbytes)</code>, where <code>nbytes</code> is the number of bytes written.</p>
+
+<p>NOTE: Filer currently writes the entire buffer in a single operation. However, future versions may do it in chunks.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Create a file with the following bytes.</span>
+<span class="kd">var</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">Buffer</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]);</span>
+
+<span class="nx">fs</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fd</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+
+  <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="nx">buffer</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="nx">written</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="kd">function</span> <span class="nx">writeBytes</span><span class="p">(</span><span class="nx">offset</span><span class="p">,</span> <span class="nx">position</span><span class="p">,</span> <span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">length</span> <span class="o">=</span> <span class="nx">length</span> <span class="o">||</span> <span class="nx">buffer</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">written</span><span class="p">;</span>
+
+    <span class="nx">fs</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">fd</span><span class="p">,</span> <span class="nx">buffer</span><span class="p">,</span> <span class="nx">offset</span><span class="p">,</span> <span class="nx">length</span><span class="p">,</span> <span class="nx">position</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">nbytes</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+
+      <span class="c1">// nbytes is now the number of bytes written, between 0 and buffer.length.</span>
+      <span class="c1">// See if we still have more bytes to write.</span>
+      <span class="nx">written</span> <span class="o">+=</span> <span class="nx">nbytes</span><span class="p">;</span>
+
+      <span class="k">if</span><span class="p">(</span><span class="nx">written</span> <span class="o">&lt;</span> <span class="nx">expected</span><span class="p">)</span>
+        <span class="nx">writeBytes</span><span class="p">(</span><span class="nx">written</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+      <span class="k">else</span>
+        <span class="nx">fs</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="nx">fd</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+
+  <span class="nx">writeBytes</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsreadfd-buffer-offset-length-position-callback" class="anchor" href="#fsreadfd-buffer-offset-length-position-callback"><span class="octicon octicon-link"></span></a>fs.read(fd, buffer, offset, length, position, callback)<a name="read"></a>
+</h4>
+
+<p>Read bytes from the file specified by <code>fd</code> into <code>buffer</code>. Asynchronous <a href="http://pubs.opengroup.org/onlinepubs/009695399/functions/read.html">read(2), pread(2)</a>. The <code>offset</code> and <code>length</code> arguments describe the part of the buffer to be used. The <code>position</code> refers to the offset from the beginning of the file where this data should be read. If <code>position</code> is <code>null</code>, the data will be written at the current position. The callback gets <code>(error, nbytes)</code>, where <code>nbytes</code> is the number of bytes read.</p>
+
+<p>NOTE: Filer currently reads into the buffer in a single operation. However, future versions may do it in chunks.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">fs</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fd</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+
+  <span class="c1">// Determine size of file</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">fstat</span><span class="p">(</span><span class="nx">fd</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">stats</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+
+    <span class="c1">// Create a buffer large enough to hold the file's contents</span>
+    <span class="kd">var</span> <span class="nx">nbytes</span> <span class="o">=</span> <span class="nx">expected</span> <span class="o">=</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">size</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">Buffer</span><span class="p">(</span><span class="nx">nbytes</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">read</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="kd">function</span> <span class="nx">readBytes</span><span class="p">(</span><span class="nx">offset</span><span class="p">,</span> <span class="nx">position</span><span class="p">,</span> <span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">length</span> <span class="o">=</span> <span class="nx">length</span> <span class="o">||</span> <span class="nx">buffer</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">read</span><span class="p">;</span>
+
+      <span class="nx">fs</span><span class="p">.</span><span class="nx">read</span><span class="p">(</span><span class="nx">fd</span><span class="p">,</span> <span class="nx">buffer</span><span class="p">,</span> <span class="nx">offset</span><span class="p">,</span> <span class="nx">length</span><span class="p">,</span> <span class="nx">position</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">nbytes</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+
+        <span class="c1">// nbytes is now the number of bytes read, between 0 and buffer.length.</span>
+        <span class="c1">// See if we still have more bytes to read.</span>
+        <span class="nx">read</span> <span class="o">+=</span> <span class="nx">nbytes</span><span class="p">;</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="nx">read</span> <span class="o">&lt;</span> <span class="nx">expected</span><span class="p">)</span>
+          <span class="nx">readBytes</span><span class="p">(</span><span class="nx">read</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+        <span class="k">else</span>
+          <span class="nx">fs</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="nx">fd</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+
+    <span class="nx">readBytes</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsreadfilefilename-options-callback" class="anchor" href="#fsreadfilefilename-options-callback"><span class="octicon octicon-link"></span></a>fs.readFile(filename, [options], callback)<a name="readFile"></a>
+</h4>
+
+<p>Reads the entire contents of a file. The <code>options</code> argument is optional, and can take the form <code>"utf8"</code> (i.e., an encoding) or be an object literal: <code>{ encoding: "utf8", flag: "r" }</code>. If no encoding is specified, the raw binary buffer is returned via the callback. The callback gets <code>(error, data)</code>, where data is the contents of the file.</p>
+
+<p>Examples:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Read UTF8 text file</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="s1">'/myfile.txt'</span><span class="p">,</span> <span class="s1">'utf8'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// data is now the contents of /myfile.txt (i.e., a String)</span>
+<span class="p">});</span>
+
+<span class="c1">// Read binary file</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="s1">'/myfile.txt'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// data is now the contents of /myfile.txt (i.e., a Buffer with the bytes)</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fswritefilefilename-data-options-callback" class="anchor" href="#fswritefilefilename-data-options-callback"><span class="octicon octicon-link"></span></a>fs.writeFile(filename, data, [options], callback)<a name="writeFile"></a>
+</h4>
+
+<p>Writes data to a file. <code>data</code> can be a string or <code>Buffer</code>, in which case any encoding option is ignored. The <code>options</code> argument is optional, and can take the form <code>"utf8"</code> (i.e., an encoding) or be an object literal: <code>{ encoding: "utf8", flag: "w" }</code>. If no encoding is specified, and <code>data</code> is a string, the encoding defaults to <code>'utf8'</code>.  The callback gets <code>(error)</code>.</p>
+
+<p>Examples:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Write UTF8 text file</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">'/myfile.txt'</span><span class="p">,</span> <span class="s2">"...data..."</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="c1">// Write binary file</span>
+<span class="kd">var</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">Buffer</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]);</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="nx">buffer</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsappendfilefilename-data-options-callback" class="anchor" href="#fsappendfilefilename-data-options-callback"><span class="octicon octicon-link"></span></a>fs.appendFile(filename, data, [options], callback)<a name="appendFile"></a>
+</h4>
+
+<p>Writes data to the end of a file. <code>data</code> can be a string or a <code>Buffer</code>, in which case any encoding option is ignored. The <code>options</code> argument is optional, and can take the form <code>"utf8"</code> (i.e., an encoding) or be an object literal: <code>{ encoding: "utf8", flag: "w" }</code>. If no encoding is specified, and <code>data</code> is a string, the encoding defaults to <code>'utf8'</code>.  The callback gets <code>(error)</code>.</p>
+
+<p>Examples:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Append UTF8 text file</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">'/myfile.txt'</span><span class="p">,</span> <span class="s2">"More..."</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+<span class="p">});</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">appendFile</span><span class="p">(</span><span class="s1">'/myfile.txt'</span><span class="p">,</span> <span class="s2">"Data..."</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+<span class="p">});</span>
+<span class="c1">// '/myfile.txt' would now read out 'More...Data...'</span>
+
+<span class="c1">// Append binary file</span>
+<span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">Buffer</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]);</span>
+<span class="kd">var</span> <span class="nx">more</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">Buffer</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]);</span>
+
+<span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">appendFile</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="nx">more</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+    <span class="c1">// '/myfile' would now contain [1, 2, 3, 4, 5, 6, 7, 8]</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fssetxattrpath-name-value-flag-callback" class="anchor" href="#fssetxattrpath-name-value-flag-callback"><span class="octicon octicon-link"></span></a>fs.setxattr(path, name, value, [flag], callback)<a name="setxattr"></a>
+</h4>
+
+<p>Sets an extended attribute of a file or directory named <code>path</code>. Asynchronous <a href="http://man7.org/linux/man-pages/man2/setxattr.2.html">setxattr(2)</a>.
+The optional <code>flag</code> parameter can be set to the following:</p>
+
+<ul>
+<li>
+<code>XATTR_CREATE</code>: ensures that the extended attribute with the given name will be new and not previously set. If an attribute with the given name already exists, it will return an <code>EExists</code> error to the callback.</li>
+<li>
+<code>XATTR_REPLACE</code>: ensures that an extended attribute with the given name already exists. If an attribute with the given name does not exist, it will return an <code>ENoAttr</code> error to the callback.</li>
+</ul><p>Callback gets no additional arguments.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="s1">'data'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+  <span class="c1">// Set a simple extended attribute on /myfile</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">setxattr</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="s1">'extra'</span><span class="p">,</span> <span class="s1">'some-information'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+    <span class="c1">// /myfile now has an added attribute of extra='some-information'</span>
+  <span class="p">});</span>
+
+  <span class="c1">// Set a complex object attribute on /myfile</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">setxattr</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="s1">'extra-complex'</span><span class="p">,</span> <span class="p">{</span> <span class="nx">key1</span><span class="o">:</span> <span class="s1">'value1'</span><span class="p">,</span> <span class="nx">key2</span><span class="o">:</span> <span class="mi">103</span> <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+    <span class="c1">// /myfile now has an added attribute of extra={ key1: 'value1', key2: 103 }</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsfsetxattrfd-name-value-flag-callback" class="anchor" href="#fsfsetxattrfd-name-value-flag-callback"><span class="octicon octicon-link"></span></a>fs.fsetxattr(fd, name, value, [flag], callback)<a name="fsetxattr"></a>
+</h4>
+
+<p>Sets an extended attribute of the file represented by the open file descriptor <code>fd</code>. Asynchronous <a href="http://man7.org/linux/man-pages/man2/setxattr.2.html">setxattr(2)</a>.  See <code>fs.setxattr</code> for more details. Callback gets no additional arguments.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">fs</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fd</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+  <span class="c1">// Set a simple extended attribute on fd for /myfile</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">fsetxattr</span><span class="p">(</span><span class="nx">fd</span><span class="p">,</span> <span class="s1">'extra'</span><span class="p">,</span> <span class="s1">'some-information'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+    <span class="c1">// /myfile now has an added attribute of extra='some-information'</span>
+  <span class="p">});</span>
+
+  <span class="c1">// Set a complex object attribute on fd for /myfile</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">fsetxattr</span><span class="p">(</span><span class="nx">fd</span><span class="p">,</span> <span class="s1">'extra-complex'</span><span class="p">,</span> <span class="p">{</span> <span class="nx">key1</span><span class="o">:</span> <span class="s1">'value1'</span><span class="p">,</span> <span class="nx">key2</span><span class="o">:</span> <span class="mi">103</span> <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+    <span class="c1">// /myfile now has an added attribute of extra={ key1: 'value1', key2: 103 }</span>
+  <span class="p">});</span>
+
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="nx">fd</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsgetxattrpath-name-callback" class="anchor" href="#fsgetxattrpath-name-callback"><span class="octicon octicon-link"></span></a>fs.getxattr(path, name, callback)<a name="getxattr"></a>
+</h4>
+
+<p>Gets an extended attribute value for a file or directory. Asynchronous <a href="http://man7.org/linux/man-pages/man2/getxattr.2.html">getxattr(2)</a>.
+Callback gets <code>(error, value)</code>, where <code>value</code> is the value for the extended attribute named <code>name</code>.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Get the value of the extended attribute on /myfile named `extra`</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">getxattr</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="s1">'extra'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+  <span class="c1">// `value` is now the value of the extended attribute named `extra` for /myfile</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsfgetxattrfd-name-callback" class="anchor" href="#fsfgetxattrfd-name-callback"><span class="octicon octicon-link"></span></a>fs.fgetxattr(fd, name, callback)<a name="fgetxattr"></a>
+</h4>
+
+<p>Gets an extended attribute value for the file represented by the open file descriptor <code>fd</code>.
+Asynchronous <a href="http://man7.org/linux/man-pages/man2/getxattr.2.html">getxattr(2)</a>.
+See <code>fs.getxattr</code> for more details. Callback gets <code>(error, value)</code>, where <code>value</code> is the value for the extended attribute named <code>name</code>.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Get the value of the extended attribute on /myfile named `extra`</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fd</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">fgetxattr</span><span class="p">(</span><span class="nx">fd</span><span class="p">,</span> <span class="s1">'extra'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+    <span class="c1">// `value` is now the value of the extended attribute named `extra` for /myfile</span>
+  <span class="p">});</span>
+
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="nx">fd</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsremovexattrpath-name-callback" class="anchor" href="#fsremovexattrpath-name-callback"><span class="octicon octicon-link"></span></a>fs.removexattr(path, name, callback)<a name="removexattr"></a>
+</h4>
+
+<p>Removes the extended attribute identified by <code>name</code> for the file given at <code>path</code>. Asynchronous <a href="http://man7.org/linux/man-pages/man2/removexattr.2.html">removexattr(2)</a>. Callback gets no additional arguments.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Remove an extended attribute on /myfile</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">removexattr</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="s1">'extra'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+  <span class="c1">// The `extra` extended attribute on /myfile is now gone</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fsfremovexattrfd-name-callback" class="anchor" href="#fsfremovexattrfd-name-callback"><span class="octicon octicon-link"></span></a>fs.fremovexattr(fd, name, callback)<a name="fremovexattr"></a>
+</h4>
+
+<p>Removes the extended attribute identified by <code>name</code> for the file represented by the open file descriptor <code>fd</code>.
+Asynchronous <a href="http://man7.org/linux/man-pages/man2/removexattr.2.html">removexattr(2)</a>. See <code>fs.removexattr</code> for more details.
+Callback gets no additional arguments.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Remove an extended attribute on /myfile</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fd</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">fremovexattr</span><span class="p">(</span><span class="nx">fd</span><span class="p">,</span> <span class="s1">'extra'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+    <span class="c1">// The `extra` extended attribute on /myfile is now gone</span>
+  <span class="p">});</span>
+
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="nx">fd</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="fswatchfilename-options-listener" class="anchor" href="#fswatchfilename-options-listener"><span class="octicon octicon-link"></span></a>fs.watch(filename, [options], [listener])<a name="watch"></a>
+</h4>
+
+<p>Watch for changes to a file or directory at <code>filename</code>. The object returned is an <code>FSWatcher</code>,
+which is an <a href="http://nodejs.org/api/events.html"><code>EventEmitter</code></a> with the following additional method:</p>
+
+<ul>
+<li>
+<code>close()</code> - stops listening for changes, and removes all listeners from this instance. Use this
+to stop watching a file or directory after calling <code>fs.watch()</code>.</li>
+</ul><p>The only supported option is <code>recursive</code>, which if <code>true</code> will cause a watch to be placed
+on a directory, and all sub-directories and files beneath it.</p>
+
+<p>The <code>listener</code> callback gets two arguments <code>(event, filename)</code>. <code>event</code> is either <code>'rename'</code> or <code>'change'</code>,
+(currenty only <code>'rename'</code> is supported) and <code>filename</code> is the name of the file/dir which triggered the event.</p>
+
+<p>Unlike node.js, all watch events return a path. Also, all returned paths are absolute from the root
+vs. just a relative filename.</p>
+
+<p>Examples:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Example 1: create a watcher to see when a file is created</span>
+<span class="kd">var</span> <span class="nx">watcher</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">filename</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// event could be 'change' or 'rename' and filename will be '/myfile'</span>
+  <span class="c1">// Stop watching for changes</span>
+  <span class="nx">watcher</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+<span class="p">});</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">'/myfile'</span><span class="p">,</span> <span class="s1">'data'</span><span class="p">);</span>
+
+<span class="c1">// Example 2: add the listener via watcher.on()</span>
+<span class="kd">var</span> <span class="nx">watcher</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="s1">'/myfile2'</span><span class="p">);</span>
+<span class="nx">watcher</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'change'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">filename</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// event will be 'change' and filename will be '/myfile2'</span>
+  <span class="c1">// Stop watching for changes</span>
+  <span class="nx">watcher</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+<span class="p">});</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">'/myfile2'</span><span class="p">,</span> <span class="s1">'data2'</span><span class="p">);</span>
+
+<span class="c1">// Example 3: recursive watch on /data dir</span>
+<span class="kd">var</span> <span class="nx">watcher</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="s1">'/data'</span><span class="p">,</span> <span class="p">{</span> <span class="nx">recursive</span><span class="o">:</span> <span class="kc">true</span> <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">filename</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// event could be 'change' or 'rename' and filename will be '/data/subdir/file'</span>
+  <span class="c1">// Stop watching for changes</span>
+  <span class="nx">watcher</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+<span class="p">});</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">'/data/subdir/file'</span><span class="p">,</span> <span class="s1">'data'</span><span class="p">);</span>
+</pre></div>
+
+<h3>
+<a name="filesystemshell" class="anchor" href="#filesystemshell"><span class="octicon octicon-link"></span></a>FileSystemShell<a name="FileSystemShell"></a>
+</h3>
+
+<p>Many common file system shell operations are available by using a <code>FileSystemShell</code> object.
+The <code>FileSystemShell</code> is obtained from, and used in conjuction with a <code>FileSystem</code>,
+and provides augmented features. Many separate <code>FileSystemShell</code> objects can exist per
+<code>FileSystem</code>, but each <code>FileSystemShell</code> is bound to a single instance of a <code>FileSystem</code>
+for its lifetime.</p>
+
+<p>A <code>FileSystemShell</code> is created using the <code>FileSystem.Shell()</code> function:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">FileSystem</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">sh</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">Shell</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">sh2</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">Shell</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+<span class="c1">// sh and sh2 are two separate shells, each bound to fs</span>
+</pre></div>
+
+<p>The <code>FileSystemShell</code> can take an optional <code>options</code> object. The <code>options</code> object
+can include <code>env</code>, which is a set of environment variables. Currently supported variables
+include <code>TMP</code> (the path to the temporary directory), and <code>PATH</code> (the list of known paths) and
+others may be added in the future. You can also add your own, or update existing variables.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">FileSystem</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">sh</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">Shell</span><span class="p">({</span>
+  <span class="nx">env</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">TMP</span><span class="o">:</span> <span class="s1">'/tempdir'</span><span class="p">,</span>
+    <span class="nx">PATH</span><span class="o">:</span> <span class="s1">'/one:/two'</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+<span class="kd">var</span> <span class="nx">tempPath</span> <span class="o">=</span> <span class="nx">sh</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'TMP'</span><span class="p">);</span>
+<span class="nx">sh</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'TMP'</span><span class="p">,</span> <span class="s1">'/newtempdir'</span><span class="p">);</span>
+</pre></div>
+
+<p>NOTE: unless otherwise stated, all <code>FileSystemShell</code> methods can take relative or absolute
+paths. Relative paths are resolved relative to the shell's current working directory (<code>sh.cwd</code>).
+This is different from the <code>FileSystem</code>, which requires absolute paths, and has no notion
+of a current working directory.</p>
+
+<h4>
+<a name="filesystemshell-properties" class="anchor" href="#filesystemshell-properties"><span class="octicon octicon-link"></span></a>FileSystemShell Properties</h4>
+
+<p>A <code>FileSystemShell</code> has a number of properties, including:</p>
+
+<ul>
+<li>
+<code>fs</code> - (readonly) a reference to the bound <code>FileSystem</code>
+</li>
+<li>
+<code>env</code> - (readonly) the shell's environment. The shell's environemnt <code>env</code> object has <code>get(name)</code>
+and <code>set(name, value)</code> methods.</li>
+</ul><p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">FileSystem</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">sh</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">Shell</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="nx">sh</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'PATH'</span><span class="p">);</span>
+
+<span class="c1">// Store the current location</span>
+<span class="kd">var</span> <span class="nx">before</span> <span class="o">=</span> <span class="nx">sh</span><span class="p">.</span><span class="nx">pwd</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">after</span><span class="p">;</span>
+<span class="nx">sh</span><span class="p">.</span><span class="nx">cd</span><span class="p">(</span><span class="s1">'/newdir'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// Get the new location</span>
+  <span class="nx">after</span> <span class="o">=</span> <span class="nx">sh</span><span class="p">.</span><span class="nx">pwd</span><span class="p">();</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="filesystemshell-instance-methods" class="anchor" href="#filesystemshell-instance-methods"><span class="octicon octicon-link"></span></a>FileSystemShell Instance Methods</h4>
+
+<p>Once a <code>FileSystemShell</code> object is created, it has the following methods. NOTE: code
+examples below assume a <code>FileSystemShell</code> instance named <code>sh</code> has been created like so:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Filer</span><span class="p">.</span><span class="nx">FileSystem</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">sh</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">Shell</span><span class="p">();</span>
+</pre></div>
+
+<ul>
+<li><a href="#cd">sh.cd(path, callback)</a></li>
+<li><a href="#pwd">sh.pwd()</a></li>
+<li><a href="#ls">sh.ls(dir, [options], callback)</a></li>
+<li><a href="#exec">sh.exec(path, [args], callback)</a></li>
+<li><a href="#touch">sh.touch(path, [options], callback)</a></li>
+<li><a href="#cat">sh.cat(files, callback)</a></li>
+<li><a href="#rm">sh.rm(path, [options], callback)</a></li>
+<li><a href="#tempDir">sh.tempDir(callback)</a></li>
+<li><a href="#mkdirp">sh.mkdirp(path, callback)</a></li>
+</ul><h4>
+<a name="shcdpath-callback" class="anchor" href="#shcdpath-callback"><span class="octicon octicon-link"></span></a>sh.cd(path, callback)<a name="cd"></a>
+</h4>
+
+<p>Changes the current working directory to the directory at <code>path</code>. The callback returns
+an error if <code>path</code> does not exist, or is not a directory. Once the callback occurs
+the shell's cwd is updated to the new path (you can access it via <code>sh.pwd()</code>).</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">sh</span><span class="p">.</span><span class="nx">cd</span><span class="p">(</span><span class="s1">'/dir1'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// sh.pwd() is now '/dir1'</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="shpwd" class="anchor" href="#shpwd"><span class="octicon octicon-link"></span></a>sh.pwd()<a name="pwd"></a>
+</h4>
+
+<p>Returns the shell's current working directory. See <a href="#cd">sh.cd()</a>.</p>
+
+<h4>
+<a name="shlsdir-options-callback" class="anchor" href="#shlsdir-options-callback"><span class="octicon octicon-link"></span></a>sh.ls(dir, [options], callback)<a name="ls"></a>
+</h4>
+
+<p>Get the listing of a directory, returning an array of directory entries
+in the following form:</p>
+
+<pre><code>{
+  path: &lt;String&gt; the basename of the directory entry
+  links: &lt;Number&gt; the number of links to the entry
+  size: &lt;Number&gt; the size in bytes of the entry
+  modified: &lt;Number&gt; the last modified date/time
+  type: &lt;String&gt; the type of the entry
+  contents: &lt;Array&gt; an optional array of child entries, if this entry is itself a directory
+}
+</code></pre>
+
+<p>By default <code>sh.ls()</code> gives a shallow listing. If you want to follow
+directories as they are encountered, use the <code>recursive=true</code> option. NOTE:
+you should not count on the order of the returned entries always being the same.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="cm">/**</span>
+<span class="cm"> * Given a dir structure of:</span>
+<span class="cm"> *</span>
+<span class="cm"> * /dir</span>
+<span class="cm"> *  file1</span>
+<span class="cm"> *  file2</span>
+<span class="cm"> *  dir2/</span>
+<span class="cm"> *   file3</span>
+<span class="cm"> */</span>
+
+<span class="c1">// Shallow listing</span>
+<span class="nx">sh</span><span class="p">.</span><span class="nx">ls</span><span class="p">(</span><span class="s1">'/dir'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">entries</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// entries is now an array of 3 file/dir entries under /dir</span>
+<span class="p">});</span>
+
+<span class="c1">// Deep listing</span>
+<span class="nx">sh</span><span class="p">.</span><span class="nx">ls</span><span class="p">(</span><span class="s1">'/dir'</span><span class="p">,</span> <span class="p">{</span> <span class="nx">recursive</span><span class="o">:</span> <span class="kc">true</span> <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">entries</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// entries is now an array of 3 file/dir entries under /dir.</span>
+  <span class="c1">// The entry object for '/dir2' also includes a `contents` property,</span>
+  <span class="c1">// which is an array of 1 entry element for `file3`.</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="shexecpath-args-callback" class="anchor" href="#shexecpath-args-callback"><span class="octicon octicon-link"></span></a>sh.exec(path, [args], callback)<a name="exec"></a>
+</h4>
+
+<p>Attempts to execute the .js command located at <code>path</code>. The <code>sh.exec</code> method
+enables apps to install larger programs into the file system and run them
+later without having to re-download.  Such commands should be written so as
+to assume the existence of 3 global variables, which will be defined at runtime:</p>
+
+<ul>
+<li>
+<code>fs</code> - [FileSystem] the <code>FileSystem</code> object bound to this shell.</li>
+<li>
+<code>args</code> - [Array] a list of any arguments for the command, or the empty list</li>
+<li>
+<code>callback</code> - [Function] a callback function of the form <code>function callback(error, result)</code>
+to call when done.</li>
+</ul><p>The .js command's contents should be the body of a function that
+looks like this:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">fs</span><span class="p">,</span> <span class="nx">args</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+<span class="c1">//-------------------------commmand code here---------</span>
+<span class="c1">// ...</span>
+<span class="c1">//----------------------------------------------------</span>
+ <span class="p">}</span>
+</pre></div>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Simple command to delete a file.</span>
+<span class="kd">var</span> <span class="nx">cmd</span> <span class="o">=</span> <span class="s2">"fs.unlink(args[0], callback);"</span>
+
+<span class="c1">// Write the file to the filesystem</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">'/cmd.js'</span><span class="p">,</span> <span class="nx">cmd</span><span class="p">,</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+  <span class="c1">// Execute the command</span>
+  <span class="nx">sh</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="s1">'/cmd.js'</span><span class="p">,</span> <span class="p">[</span> <span class="s1">'/file'</span> <span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="shtouchpath-options-callback" class="anchor" href="#shtouchpath-options-callback"><span class="octicon octicon-link"></span></a>sh.touch(path, [options], callback)<a name="touch"></a>
+</h4>
+
+<p>Create a file if it does not exist, or update the access and modified
+times if it does. Valid options include:</p>
+
+<ul>
+<li>
+<code>updateOnly</code> - <code>true</code> if the file's access/modified dates are to be updated
+only (but missing file not to be)</li>
+<li>
+<code>date</code> - a date to use instead of the current date and time when updating
+access and modified dates.</li>
+</ul><p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">sh</span><span class="p">.</span><span class="nx">touch</span><span class="p">(</span><span class="s1">'/newfile'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">exists</span><span class="p">(</span><span class="s1">'/newfile'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">exists</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// exists is now true.</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="shcatfiles-callback" class="anchor" href="#shcatfiles-callback"><span class="octicon octicon-link"></span></a>sh.cat(files, callback)<a name="cat"></a>
+</h4>
+
+<p>Concatenates multiple files into a single string, with each file
+separated by a newline character. The <code>files</code> argument should be
+a String (i.e., path to a single file) or an Array of Strings (i.e.,
+multiple paths for multiple files).</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">sh</span><span class="p">.</span><span class="nx">cat</span><span class="p">([</span> <span class="s1">'./file1'</span><span class="p">,</span> <span class="s1">'../file2'</span> <span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// data is now the contents of file1 and file2 joined</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="shrmpath-options-callback" class="anchor" href="#shrmpath-options-callback"><span class="octicon octicon-link"></span></a>sh.rm(path, [options], callback)<a name="rm"></a>
+</h4>
+
+<p>Removes (deletes) the file or directory at <code>path</code>. If <code>path</code> is a file, it will
+be removed. If <code>path</code> is a directory, it will be removed if it is empty, otherwise
+the callback will receive an error. In order to remove non-empty directories,
+use the <code>recursive=true</code> option.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">sh</span><span class="p">.</span><span class="nx">rm</span><span class="p">(</span><span class="s1">'./file'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// ./file is now removed</span>
+<span class="p">});</span>
+
+<span class="nx">sh</span><span class="p">.</span><span class="nx">rm</span><span class="p">(</span><span class="s1">'/dir'</span><span class="p">,</span> <span class="p">{</span> <span class="nx">recursive</span><span class="o">:</span> <span class="kc">true</span> <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// /dir and all its children are now removed</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="shtempdircallback" class="anchor" href="#shtempdircallback"><span class="octicon octicon-link"></span></a>sh.tempDir(callback)<a name="tempDir"></a>
+</h4>
+
+<p>Gets the path to the shell's temporary directory, creating it if it
+does not already exist. The temp directory to use is specified in the
+<code>env.TMP</code> environment variable. The callback receives an error
+and the <code>tempDir</code> path. NOTE: it is safe to call this many times (i.e.,
+the temp dir will only be created once). No effort is made to clean-up
+the temp dir, and it is up to the caller to destroy it if desired.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Default /tmp dir</span>
+<span class="nx">sh</span><span class="p">.</span><span class="nx">tempDir</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">tmp</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// tmp is now '/tmp' by default, and /tmp exists</span>
+<span class="p">});</span>
+
+<span class="c1">// Specify a tmp dir path</span>
+<span class="nx">sh</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">TMP</span> <span class="o">=</span> <span class="s1">'/temporary'</span>
+<span class="nx">sh</span><span class="p">.</span><span class="nx">tempDir</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">tmp</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// tmp is now '/temporary', and /temporary exists</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>
+<a name="shmkdirppath-callback" class="anchor" href="#shmkdirppath-callback"><span class="octicon octicon-link"></span></a>sh.mkdirp(path, callback)<a name="mkdirp"></a>
+</h4>
+
+<p>Recursively creates the directory at the provided path. If the 
+directory already exists, no error is returned. All parents must
+be valid directories (not files). </p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Default empty filesystem</span>
+<span class="nx">sh</span><span class="p">.</span><span class="nx">mkdirp</span><span class="p">(</span><span class="s1">'/test/mkdirp'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="c1">// the root '/' now contains a directory 'test' containing the directory 'mkdirp'</span>
+<span class="p">});</span>
+</pre></div>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Filer maintained by <a href="https://github.com/filerjs">filerjs</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
