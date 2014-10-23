@@ -75,7 +75,11 @@ WebSQLContext.prototype.getBuffer = function(key, callback) {
     // Deal with zero-length ArrayBuffers, which will be encoded as ''
     if(result || result === '') {
       var arrayBuffer = base64ArrayBuffer.decode(result);
-      result = new FilerBuffer(arrayBuffer);
+      try {
+        result = new FilerBuffer(arrayBuffer);
+      } catch(e) {
+        return callback(new Error('Could not create a buffer'));
+      }
     }
 
     callback(null, result);

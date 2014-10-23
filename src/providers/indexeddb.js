@@ -51,7 +51,11 @@ IndexedDBContext.prototype.getBuffer = function(key, callback) {
     if(err) {
       return callback(err);
     }
-    callback(null, new FilerBuffer(arrayBuffer));
+    try {
+      callback(null, new FilerBuffer(arrayBuffer));
+    } catch(e) {
+      callback(new Error('Could not create a buffer'));
+    }
   });
 };
 
